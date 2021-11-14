@@ -24,3 +24,14 @@ services:
       - ./web:/usr/share/nginx/html/
     ports:
       - 80:80
+  app:
+    image: python:3.6
+    volumes: 
+      #MAPEANDO APLICAÇÃO
+      - ./app:/app
+
+    #DEFININDO DIRETÓRIO RECORRENTE DE EXECUÇÃO DENTRO DO CONTAINER
+    working_dir: /app
+    command: bash ./app.sh
+    ports:
+      - 8080:8080
