@@ -1,8 +1,6 @@
-DROP DATABASE IF EXISTS email_sender;
-
 CREATE DATABASE email_sender;
 
-\c email_sender;
+\c email_sender
 
 CREATE TABLE emails (
     id serial NOT NULL,

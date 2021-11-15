@@ -1,40 +1,54 @@
 version: '3'
 volumes:
   dados:
+networks:
+  banco: 
+  web:
 services:
   db:
-    image: postgres:9.6    
-    restart: always
+    image: postgres:9.6 
     environment: 
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_HOST_AUTH_METHOD=trust      
+      #- POSTGRES_USER=postgres
+      #- POSTGRES_PASSWORD=postgres
     volumes:      
       #VOLUME QUE APONTA PARA OS SCRIPTS
       - ./scripts:/scripts
-
       #SCRIPT DE INICIALIZACAO DO BD
-      - ./scripts/init.sql:/docker-entrypoint-initdb.d/init.sql
-      
+      - ./scripts/init.sql:/docker-entrypoint-initdb.d/init.sql      
       #VOLUME DOS DADOS
       - dados:/var/lib/postgresql/data
+    #INFORMANDO QUE O SERVICE bd PERTENCE SOMENTE A REDE banco
+    networks: 
+      - banco
 
   frontend:
     image: nginx:1.13
     volumes: 
       #SITE FRONTEND
       - ./web:/usr/share/nginx/html/
-
       #CONFIGURAÇÃO DO PROXY_REVERSO
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
     ports:
-      - 80:80
-
+      - 80:80    
+    #INFORMANDO QUE O SERVICE frontend PERTENCE SOMENTE A REDE web
+    networks:
+      - web    
+    #INFORMANDO QUE PARE SER EXECUTADO O FRONTEND DEPENDE QUE O app ESTEJA ON É UMA DEPENDÊNCIA
+    depends_on:
+      - app
   app:
     image: python:3.6
     volumes: 
       #MAPEANDO APLICAÇÃO
       - ./app:/app
-
     #DEFININDO DIRETÓRIO RECORRENTE DE EXECUÇÃO DENTRO DO CONTAINER
     working_dir: /app
     command: bash ./app.sh
+    #SESSAO DE REDE
+    networks:
+      - banco
+      - web
+    #DEPENDENCIA DO BD
+    depends_on:
+      - db
