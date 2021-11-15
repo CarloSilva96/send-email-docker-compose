@@ -5,7 +5,6 @@ from bottle import Bottle, route, run, request
 def send():
     assunto = request.forms.get('assunto')
     mensagem = request.forms.get('mensagem')
-    print (a)
     return 'Enviado! \n Assunto: {assunto}, Mensagem: {mensagem}'.format(
         assunto = assunto,
         mensagem = mensagem
