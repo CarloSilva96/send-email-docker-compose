@@ -60,14 +60,14 @@ services:
     networks:
       - fila
   worker:
-    image: python:3.6
+    build: worker
     volumes:
       - ./worker:/worker
     #EXECUTANDO DIRETÓRIO CORRENTE
     working_dir: /worker
     #INSTALANDO AS DEPENDENCIAS E EXECUTADO CÓDIGO PYTHON
-    command: bash ./app.sh
-    networks:
+    command: worker.py
+    networks: 
       - fila
     depends_on:
       - queue

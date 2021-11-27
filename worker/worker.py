@@ -8,6 +8,7 @@ if __name__ == '__main__':
     r = redis.Redis(host='queue', port=6379, db=0)
     
     # Laço infinito para envio de mensagens
+    print('Aguardando mensagem ...')
     while True:
         mensagem = json.loads(r.blpop('sender')[1])
         # Simulação de envio do email
