@@ -4,6 +4,7 @@ volumes:
 networks:
   banco: 
   web:
+  fila:
 services:
   db:
     image: postgres:9.6 
@@ -21,7 +22,6 @@ services:
     #INFORMANDO QUE O SERVICE bd PERTENCE SOMENTE A REDE banco
     networks: 
       - banco
-
   frontend:
     image: nginx:1.13
     volumes: 
@@ -37,7 +37,7 @@ services:
     #INFORMANDO QUE PARE SER EXECUTADO O FRONTEND DEPENDE QUE O app ESTEJA ON É UMA DEPENDÊNCIA
     depends_on:
       - app
-  app:
+  app:    
     image: python:3.6
     volumes: 
       #MAPEANDO APLICAÇÃO
@@ -49,6 +49,25 @@ services:
     networks:
       - banco
       - web
+      - fila
     #DEPENDENCIA DO BD
     depends_on:
       - db
+      - queue
+  #SERVICO PARA ARMAZER OS EMAILS EM MEMÓRIA E DEPOIS ENCAMINHAR PARA DESTINATÁRIO
+  queue:
+    image: redis:3.2
+    networks:
+      - fila
+  worker:
+    image: python:3.6
+    volumes:
+      - ./worker:/worker
+    #EXECUTANDO DIRETÓRIO CORRENTE
+    working_dir: /worker
+    #INSTALANDO AS DEPENDENCIAS E EXECUTADO CÓDIGO PYTHON
+    command: bash ./app.sh
+    networks:
+      - fila
+    depends_on:
+      - queue
