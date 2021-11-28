@@ -13,48 +13,50 @@ services:
       #- POSTGRES_USER=postgres
       #- POSTGRES_PASSWORD=postgres
     volumes:      
-      #VOLUME QUE APONTA PARA OS SCRIPTS
+      # VOLUME QUE APONTA PARA OS SCRIPTS
       - ./scripts:/scripts
-      #SCRIPT DE INICIALIZACAO DO BD
+      # SCRIPT DE INICIALIZACAO DO BD
       - ./scripts/init.sql:/docker-entrypoint-initdb.d/init.sql      
-      #VOLUME DOS DADOS
+      # VOLUME DOS DADOS
       - dados:/var/lib/postgresql/data
-    #INFORMANDO QUE O SERVICE bd PERTENCE SOMENTE A REDE banco
+    # INFORMANDO QUE O SERVICE bd PERTENCE SOMENTE A REDE banco
     networks: 
       - banco
   frontend:
     image: nginx:1.13
     volumes: 
-      #SITE FRONTEND
+      # SITE FRONTEND
       - ./web:/usr/share/nginx/html/
-      #CONFIGURAÇÃO DO PROXY_REVERSO
+      # CONFIGURAÇÃO DO PROXY_REVERSO
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
     ports:
       - 80:80    
-    #INFORMANDO QUE O SERVICE frontend PERTENCE SOMENTE A REDE web
+    # INFORMANDO QUE O SERVICE frontend PERTENCE SOMENTE A REDE web
     networks:
       - web    
-    #INFORMANDO QUE PARE SER EXECUTADO O FRONTEND DEPENDE QUE O app ESTEJA ON É UMA DEPENDÊNCIA
+    # INFORMANDO QUE PARE SER EXECUTADO O FRONTEND DEPENDE QUE O app ESTEJA ON É UMA DEPENDÊNCIA
     depends_on:
       - app
   app:    
     image: python:3.6
     volumes: 
-      #MAPEANDO APLICAÇÃO
+      # MAPEANDO APLICAÇÃO
       - ./app:/app
-    #DEFININDO DIRETÓRIO RECORRENTE DE EXECUÇÃO DENTRO DO CONTAINER
+    # DEFININDO DIRETÓRIO RECORRENTE DE EXECUÇÃO DENTRO DO CONTAINER
     working_dir: /app
     command: bash ./app.sh
-    #SESSAO DE REDE
+    # SESSAO DE REDE
     networks:
       - banco
       - web
       - fila
-    #DEPENDENCIA DO BD
+    # DEPENDENCIA DO BD
     depends_on:
       - db
       - queue
-  #SERVICO PARA ARMAZER OS EMAILS EM MEMÓRIA E DEPOIS ENCAMINHAR PARA DESTINATÁRIO
+    environment:
+      - DB_NAME=email_sender
+  # SERVICO PARA ARMAZER OS EMAILS EM MEMÓRIA E DEPOIS ENCAMINHAR PARA DESTINATÁRIO
   queue:
     image: redis:3.2
     networks:
@@ -63,9 +65,9 @@ services:
     build: worker
     volumes:
       - ./worker:/worker
-    #EXECUTANDO DIRETÓRIO CORRENTE
+    # EXECUTANDO DIRETÓRIO CORRENTE
     working_dir: /worker
-    #INSTALANDO AS DEPENDENCIAS E EXECUTADO CÓDIGO PYTHON
+    # INSTALANDO AS DEPENDENCIAS E EXECUTADO CÓDIGO PYTHON
     command: worker.py
     networks: 
       - fila

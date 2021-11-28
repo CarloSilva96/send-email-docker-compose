@@ -1,6 +1,8 @@
 import psycopg2
 import redis
 import json
+# api que conseguem consumir as variaveis de ambiente
+import os 
 from bottle import Bottle, request
 
 # Criando Classe Sender que herda de Bottle
@@ -9,13 +11,26 @@ class Sender(Bottle):
     def __init__(self):
         super().__init__()
         # Chamando método de rota da SuperClasse Bottle e chamando método de envio de email
-        self.route('/', method='POST', callback=self.send)
+        self.route('/', method='POST', callback=self.send)            
+                
+        # Acessando variaveis de ambiente da fila caso exista, senao é usado o valor padrao
+        redis_host = os.getenv('REDIS_HOST', 'queue')
+        
         # Acessando serviço de fila do Redis criado no container
-        self.fila = redis.StrictRedis(host='queue', port=6379, db=0)
+        self.fila = redis.StrictRedis(host=redis_host, port=6379, db=0)
+        
+        # Acessando variaveis de ambiente do banco caso exista, senao é usado o valor padrao
+        db_host = os.getenv('DB_HOST', 'db')
+        db_user = os.getenv('DB_USER', 'postgres')
+        db_name = os.getenv('DB_NAME', 'sender')
+        
         # DATA SOURCE NAME
-        DSN = 'dbname=email_sender user=postgres host=db'        
+        dsn = f'dbname={db_name} user={db_user} host={db_host}'
+        
+        # DATA SOURCE NAME
+        # DSN = 'dbname=email_sender user=postgres host=db'        
         # conectando ao banco
-        self.connect = psycopg2.connect(DSN)
+        self.connect = psycopg2.connect(dsn)
         
     # REGISTRAR MENSAGEM 
     def registrar_mesagem(self, assunto, mensagem):                
