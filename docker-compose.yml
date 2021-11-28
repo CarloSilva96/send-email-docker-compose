@@ -55,7 +55,7 @@ services:
       - db
       - queue
     environment:
-      - DB_NAME=email_sender
+      - DB_NAME=email_sender_teste
   # SERVICO PARA ARMAZER OS EMAILS EM MEMÓRIA E DEPOIS ENCAMINHAR PARA DESTINATÁRIO
   queue:
     image: redis:3.2
