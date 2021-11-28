@@ -1,8 +1,7 @@
-## send-email-docker
-- Este projeto simula envio de email usando docker para criação dos serviços de front-end, back-end, banco de dados e usando redis para armazenamento em memória,
-- ou seja, é criado uma lista de emails a serem enviados.
-- é usado proxy reverso entre o serviço de front-end.
-- é sobrecarregado o docker-compose.yml para configurar escalonamento do serviço worker.
+# send-email-docker
+- Este projeto simula envio de email usando docker para criação dos serviços de front-end, back-end, banco de dados e usando redis para armazenamento em memória, ou seja, é criado uma lista de emails a serem enviados.
+- É usado proxy reverso entre o serviço de front-end.
+- Foi sobrecarregado o docker-compose.yml para configurar escalonamento do serviço worker.
 
 ### Execução do projeto
 - Clone o projeto do git;
@@ -15,7 +14,11 @@ docker-compose up -d
 docker-compose down
 ```
 ### Caso tenha erro ao executar o script de init.sql use o comando abaixo:
-- docker-compose down -v
+```
+docker-compose down -v
+```
 
 ### Exibir logs do docker-compose
-- docker-compose logs -f -t
+```
+docker-compose logs -f -t
+```
