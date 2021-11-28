@@ -11,7 +11,7 @@ docker-compose up -d
 ```
 ### Para acessar o front-end e enviar os dados acesse o endereco abaixo no seu navegador:
 ```
-locahost
+localhost
 ```
 
 ### Parar execução do projeto
